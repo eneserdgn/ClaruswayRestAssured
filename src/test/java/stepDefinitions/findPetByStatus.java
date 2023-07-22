@@ -3,7 +3,9 @@ package stepDefinitions;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import pojo.addNewPet.Request.Category;
 import pojo.addNewPet.Request.Tag;
 import pojo.addNewPet.Request.addNewPetRequest;
 import utils.requestSpecificationFactory;
@@ -15,7 +17,7 @@ import static org.hamcrest.Matchers.lessThan;
 public class findPetByStatus {
 
     RequestSpecification request = requestSpecificationFactory.getRequestSpecification();
-
+    Response response;
     @Given("set baseURI {string}")
     public void setBaseURI(String url) {
         request.baseUri(url);
@@ -48,7 +50,7 @@ public class findPetByStatus {
 
     @When("send post request {string}")
     public void sendPostRequest(String url) {
-        request.when().post(url);
+        response = request.when().post(url);
     }
 
     @When("send put request {string}")
@@ -80,32 +82,79 @@ public class findPetByStatus {
     }
 
 
-    @Given("set body for add a new pet to store")
-    public void setBodyForAddANewPetToStore() {
+    @Given("set body for add a new pet to store {int}")
+    public void setBodyForAddANewPetToStore(int id) {
         addNewPetRequest addNewPetRequest = new addNewPetRequest();
+        addNewPetRequest.setId(id);
+        addNewPetRequest.setName("Karabaş");
+        addNewPetRequest.setStatus("available");
+
         ArrayList<Tag> tagList = new ArrayList<>();
         Tag tag1 = new Tag();
         tag1.setId(1);
         tag1.setName("Kopek");
-
         Tag tag2 = new Tag();
         tag2.setId(2);
         tag2.setName("blabla");
         tagList.add(tag1);
         tagList.add(tag2);
+        addNewPetRequest.setTags(tagList);
 
         ArrayList<String> photoUrlList = new ArrayList<>();
-        photoUrlList.add("url1");
-        photoUrlList.add("url2");
-        photoUrlList.add("url3");
-
-        addNewPetRequest.setId(1);
-        addNewPetRequest.setName("Karabaş");
-        addNewPetRequest.setStatus("available");
-        addNewPetRequest.setTags(tagList);
+        photoUrlList.add("dsasadsad");
+        photoUrlList.add("sadsadsadsa");
+        photoUrlList.add("asddsadasdsadsa");
         addNewPetRequest.setPhotoUrls(photoUrlList);
+
+
+        Category category = new Category();
+        category.setId(1);
+        category.setName("Çoban Köpeği");
+        addNewPetRequest.setCategory(category);
 
         request.body(addNewPetRequest);
     }
 
+    @Then("check response body find pet by status")
+    public void checkResponseBodyFindPetByStatus() {
+
+    }
+
+    @Then("check response body add a new pet")
+    public void checkResponseBodyAddANewPet() {
+        response.prettyPrint();
+    }
+
+    @Given("{int} idli köpek oluşturulur")
+    public void idliKöpekOluşturulur(int id) {
+        addNewPetRequest addNewPetRequest = new addNewPetRequest();
+        addNewPetRequest.setId(id);
+        addNewPetRequest.setName("Karabaş");
+        addNewPetRequest.setStatus("available");
+
+        ArrayList<Tag> tagList = new ArrayList<>();
+        Tag tag1 = new Tag();
+        tag1.setId(1);
+        tag1.setName("Kopek");
+        Tag tag2 = new Tag();
+        tag2.setId(2);
+        tag2.setName("blabla");
+        tagList.add(tag1);
+        tagList.add(tag2);
+        addNewPetRequest.setTags(tagList);
+
+        ArrayList<String> photoUrlList = new ArrayList<>();
+        photoUrlList.add("dsasadsad");
+        photoUrlList.add("sadsadsadsa");
+        photoUrlList.add("asddsadasdsadsa");
+        addNewPetRequest.setPhotoUrls(photoUrlList);
+
+
+        Category category = new Category();
+        category.setId(id);
+        category.setName("Çoban Köpeği");
+        addNewPetRequest.setCategory(category);
+
+        request.baseUri("https://petstore.swagger.io/v2").header("Content-Type","application/json").body(addNewPetRequest).when().post("/pet");
+    }
 }
