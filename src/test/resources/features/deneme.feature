@@ -10,7 +10,7 @@ Feature: deneme
     When send post request ""
     When send put request ""
     When send delete request ""
-    Then check status code "200"
+    Then check status code 200
     Then check time less than "2000"
     Then check schema validation
     Then check body "name", "Karabaş"
